@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { BaseStyled } from '../common/less/base';
 import MHeader from '../components/m-header/index';
+import Tab from '../components/tab/index';
 import withRouter from 'umi/withRouter';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
@@ -15,8 +16,8 @@ const GlobalStyled = createGlobalStyle`
   dl, dt, dd, ol, ul, li,
   fieldset, form, label, legend,
   table, caption, tbody, tfoot, thead, tr, th, td,
-  article, aside, canvas, details, embed, 
-  figure, figcaption, footer, header, hgroup, 
+  article, aside, canvas, details, embed,
+  figure, figcaption, footer, header, hgroup,
   menu, nav, output, ruby, section, summary,
   time, mark, audio, video {
     margin: 0;
@@ -27,7 +28,7 @@ const GlobalStyled = createGlobalStyle`
     vertical-align: baseline;
   }
   /* HTML5 display-role reset for older browsers */
-  article, aside, details, figcaption, figure, 
+  article, aside, details, figcaption, figure,
   footer, header, hgroup, menu, nav, section {
     display: block;
   }
@@ -50,8 +51,21 @@ const GlobalStyled = createGlobalStyle`
     border-spacing: 0;
   }
 `;
+// return (
+//   <TransitionGroup>
+//     <CSSTransition key={location.pathname} classNames="fade" timeout={300}>
+//       <>
+//         <GlobalStyled />
+//         <BaseStyled />
+//         <MHeader />
+//         <Tab />
+//         {children}
+//       </>
+//     </CSSTransition>
+//   </TransitionGroup>
+// );
 
-const Layout = props => {
+const Layout = (props: any) => {
   const { children, location } = props;
   useEffect(() => {
     function handleLocationChange() {
@@ -61,16 +75,13 @@ const Layout = props => {
     return () => {};
   }, [location]);
   return (
-    <TransitionGroup>
-      <CSSTransition key={location.pathname} classNames="fade" timeout={300}>
-        <>
-          <GlobalStyled />
-          <BaseStyled />
-          <MHeader />
-          {children}
-        </>
-      </CSSTransition>
-    </TransitionGroup>
+    <>
+      <GlobalStyled />
+      <BaseStyled />
+      <MHeader />
+      <Tab />
+      {children}
+    </>
   );
 };
 

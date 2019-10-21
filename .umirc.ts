@@ -8,8 +8,12 @@ const config: IConfig = {
       path: '/',
       component: '../layouts/index',
       routes: [
-        { path: '/', component: '../pages/index' },
+        { path: '/', redirect: '/recommend' },
         { path: '/user', component: '../pages/user/index' },
+        { path: '/recommend', component: '../pages/recommend/index' },
+        { path: '/singer', component: '../pages/singer/index' },
+        { path: '/rank', component: '../pages/rank/index' },
+        { path: '/search', component: '../pages/search/index' },
       ],
     },
   ],
