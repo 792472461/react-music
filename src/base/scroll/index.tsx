@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useRef, ReactNode, forwardRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  ReactNode,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import BScroll from 'better-scroll';
 
 const DIRECTION_H = 'horizontal';
@@ -31,7 +38,43 @@ const defaultProps: ScrollInterface = {
 const Scroll = forwardRef((props: ScrollInterface, ref) => {
   const config: ScrollInterface = Object.assign(defaultProps, props);
   let scroll: BScroll | null = null;
-  const wrapper = useRef<HTMLElement | null>(null);
+  const wrapper = useRef(null);
+
+  function disable() {
+    scroll && scroll.disable();
+  }
+  function enable() {
+    scroll && scroll.enable();
+  }
+  function refresh() {
+    scroll && scroll.refresh();
+  }
+  function scrollTo() {
+    scroll && scroll.scrollTo.apply(scroll, arguments);
+  }
+  function scrollToElement() {
+    scroll && scroll.scrollToElement.apply(scroll, arguments);
+  }
+  useImperativeHandle(ref, () => ({
+    refresh: () => {
+      refresh();
+    },
+    disable: () => {
+      disable();
+    },
+    enable: () => {
+      enable();
+    },
+    scrollTo: () => {
+      scrollTo();
+    },
+    scrollToElement: () => {
+      scrollToElement();
+    },
+  }));
+  useEffect(() => {
+    refresh();
+  }, [props.data]);
 
   function initScroll() {
     const wrapperCurrent: HTMLElement | null = wrapper.current;
@@ -62,35 +105,19 @@ const Scroll = forwardRef((props: ScrollInterface, ref) => {
         // props.beforeScroll();
       });
     }
-    ref = scroll = currentScroll
+    ref = scroll = currentScroll;
     return currentScroll;
   }
   useEffect(() => {
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       initScroll();
-    }, 20);
-    return () => clearTimeout(timer);
+    });
   }, []);
-  function disable() {
-    scroll && scroll.disable();
-  }
-  function enable() {
-    scroll && scroll.enable();
-  }
-  function refresh() {
-    scroll && scroll.refresh();
-  }
-  function scrollTo() {
-    scroll && scroll.scrollTo.apply(scroll, arguments);
-  }
-  function scrollToElement() {
-    scroll && scroll.scrollToElement.apply(scroll, arguments);
-  }
+
   return (
-    <div ref={ref} className={props.className}>
+    <div ref={wrapper} className={props.className}>
       {props.children}
     </div>
   );
 });
-
 export default Scroll;

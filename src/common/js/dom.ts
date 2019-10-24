@@ -1,19 +1,21 @@
-export function hasClass(el: HTMLElement | Element, className: string): boolean {
+export function hasClass(el: HTMLElement, className: string) {
   return el.classList.contains(className);
 }
 
-export function addClass(el: HTMLElement | Element, className: string): void {
+export function addClass(el: HTMLElement, className: string) {
+  if (hasClass(el, className)) {
+    return;
+  }
   el.classList.add(className);
 }
 
-export function getData(el: HTMLElement | Element, name: string, val: string) {
+export function getData(el: HTMLElement, name: string, val: string) {
   const prefix = 'data-';
   if (val) {
     return el.setAttribute(prefix + name, val);
   }
   return el.getAttribute(prefix + name);
 }
-
 let elementStyle: CSSStyleDeclaration = document.createElement('div').style;
 
 let vendor = (() => {

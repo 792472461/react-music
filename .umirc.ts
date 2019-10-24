@@ -1,4 +1,11 @@
 import { IConfig } from 'umi-types';
+import path from 'path';
+import axios from 'axios';
+import bodyParser from 'body-parser';
+
+const resolve = dir => {
+  return path.join(__dirname, './', dir);
+};
 
 // ref: https://umijs.org/config/
 const config: IConfig = {
@@ -40,6 +47,18 @@ const config: IConfig = {
       },
     ],
   ],
+  chainWebpack(config, { webpack }) {
+    // 设置 alias
+    config.resolve.alias.set('common', resolve('src/common'));
+    config.resolve.alias.set('components', resolve('src/components'));
+    config.resolve.alias.set('base', resolve('src/base'));
+    config.resolve.alias.set('api', resolve('src/api'));
+  },
+  devServer: {
+    proxy: {
+      '/api': 'http://localhost:3000',
+    },
+  },
 };
 
 export default config;

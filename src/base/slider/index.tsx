@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import BScroll from 'better-scroll';
-import { addClass } from '../../common/js/dom';
+import { addClass, hasClass } from '../../common/js/dom';
 import { SliderContainer, SliderGroup, Dots } from './styles';
 
 interface SliderPorps {
@@ -24,7 +24,7 @@ const defaultProps: SliderPorps = {
   momentum: false,
 };
 
-export default function(props: SliderPorps): ReactNode {
+export default function(props: SliderPorps) {
   const config: SliderPorps = Object.assign(defaultProps, props, {
     snap: {
       loop: props.loop || defaultProps.loop,
@@ -36,8 +36,8 @@ export default function(props: SliderPorps): ReactNode {
   // const [sliderInstance, initSlider] = useState<BScroll | null>(null);
   let timer: null | number = null;
   let resizeTimer: null | any = null;
-  let dots: Array<any> | null = null;
-  let currentPageIndex: number = 0;
+  const [dots, setDots] = useState<Array<any>>([]);
+  const [currentPageIndex, changeCurrentPage] = useState<number>(0);
   const sliderGroup: { current: HTMLElement | null } = useRef(null);
   const slider: { current: HTMLElement | null } = useRef(null);
   function refresh() {
@@ -46,6 +46,7 @@ export default function(props: SliderPorps): ReactNode {
       sliderInstance && sliderInstance.refresh();
     }
   }
+
   function _setSliderWidth(isResize?: boolean) {
     const sliderGroupRef = sliderGroup.current as HTMLElement;
     const sliderRef: HTMLElement = sliderGroup.current as HTMLElement;
@@ -54,11 +55,11 @@ export default function(props: SliderPorps): ReactNode {
       return;
     }
     const children: HTMLCollection = sliderGroupRef.children;
-
     let width = 0;
     let sliderWidth = sliderRef.clientWidth;
     for (let i = 0; i < children.length; i++) {
       let child: any = children[i];
+
       addClass(child, 'slider-item');
 
       child.style.width = sliderWidth + 'px';
@@ -92,7 +93,7 @@ export default function(props: SliderPorps): ReactNode {
   function _onScrollEnd() {
     if (sliderInstance) {
       let pageIndex = sliderInstance.getCurrentPage().pageX;
-      currentPageIndex = pageIndex;
+      changeCurrentPage(pageIndex);
       if (config.autoPlay) {
         _play();
       }
@@ -104,7 +105,9 @@ export default function(props: SliderPorps): ReactNode {
       return;
     }
     const children: HTMLCollection = sliderGroupRef.children;
-    dots = new Array(children.length);
+    const _dots = Array.prototype.slice.call(children).map(item => null);
+
+    setDots(_dots);
   }
   function _play() {
     timer && clearTimeout(timer);
@@ -113,7 +116,7 @@ export default function(props: SliderPorps): ReactNode {
     }, config.interval);
   }
   useEffect(() => {
-    const _timer = setTimeout(() => {
+    setTimeout(() => {
       _setSliderWidth();
       _initDots();
       _initSlider();
@@ -137,13 +140,15 @@ export default function(props: SliderPorps): ReactNode {
         refresh();
       }, 60);
     });
-    return () => clearTimeout(_timer);
+    return () => {
+      timer && clearTimeout(timer);
+    };
   }, []);
   return (
     <SliderContainer ref={slider}>
       <SliderGroup ref={sliderGroup}>{props.children}</SliderGroup>
       <Dots>
-        <span className="dot" />
+        {dots.map((item, index) => (<span key={index} className={`dot${currentPageIndex === index ? ' active' : ''}`} />))}
       </Dots>
     </SliderContainer>
   );

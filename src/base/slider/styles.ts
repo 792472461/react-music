@@ -1,8 +1,9 @@
 import styled from 'styled-components';
-import {$colorTextL, $colorTextLl} from '../../common/less/variable'
+import { $colorTextL, $colorTextLl } from '../../common/less/variable';
 
 export const SliderContainer = styled.div`
   min-height: 1px;
+  position: relative;
 `;
 
 export const SliderGroup = styled.div`
